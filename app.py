@@ -1,21 +1,16 @@
 import streamlit as st
 import google.generativeai as genai
-import random
 
-# 1. Get the list of 10 keys from secrets
-keys_list = st.secrets["GEMINI_API_KEYS"]
+# Use the SINGULAR name here
+key = st.secrets["GEMINI_API_KEY"]
+genai.configure(api_key=key)
 
-# 2. Pick a random key for this specific request
-selected_key = random.choice(keys_list)
-genai.configure(api_key=selected_key)
+st.title("📚 IELTS Test Builder")
+st.write("Testing with 1 API Key")
 
-st.title("📚 IELTS Test Builder (Turbo Mode)")
-st.write(f"Using a rotating pool of {len(keys_list)} keys")
+topic = st.text_input("Enter Topic (e.g. Science)")
 
-topic = st.text_input("Enter Topic")
-test_type = st.selectbox("Test Type", ["Reading", "Listening", "Writing", "Speaking"])
-
-if st.button("Generate Now"):
+if st.button("Generate"):
     model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content(f"Create an IELTS {test_type} test about {topic}")
+    response = model.generate_content(f"Create an IELTS reading test about {topic}")
     st.markdown(response.text)
